@@ -123,15 +123,21 @@
                     </form>
 
                     <form id="formSabores" class="action-form" style="display: none;">
-                        <div class="input-group">
-                            <label>Cadastrar Novo Sabor</label>
-                            <input type="text" id="novoSabor" required placeholder="Ex: Ninho com Morango">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Novo Sabor</label>
+                                <input type="text" id="novoSabor" required placeholder="Ex: Ninho com Morango">
+                            </div>
+                            <div class="input-group">
+                                <label>Quantidade</label>
+                                <input type="number" id="qtdVenda" min="1" required placeholder="Ex: 2">
+                            </div>
                         </div>
                         <button type="submit" class="btn-submit btn-producao">Adicionar Sabor <i class="fa-solid fa-plus"></i></button>
                         
                         <div class="flavor-manager">
                             <p class="help-text" style="margin-top: 20px;">Sabores Existentes:</p>
-                            <div id="listaSaboresAtual" class="flavor-list"></div>
+                            <div id="listaSaboresAtual" class="flavor-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                         </div>
                     </form>
                 </div>

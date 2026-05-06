@@ -1,4 +1,3 @@
-
 // ==========================================
 // 1. CONEXÃO COM O SUPABASE 
 // ==========================================
@@ -9,7 +8,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 // ==========================================
 // 2. CONFIGURAÇÕES GERAIS E TEMA
 // ==========================================
-const PRECO_BOLO = 12.00;
 const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const formatarData = (isoString) => {
     if(!isoString) return '-';
@@ -17,7 +15,6 @@ const formatarData = (isoString) => {
     return data.toLocaleDateString('pt-BR');
 };
 
-// Tema Claro/Escuro
 const themeToggleBtn = document.getElementById('themeToggle');
 if(themeToggleBtn) {
     const themeIcon = themeToggleBtn.querySelector('i');
@@ -46,7 +43,6 @@ let meuGrafico;
 
 async function carregarDadosDoBanco() {
     try {
-        // Usamos o supabaseClient agora
         const [resSabores, resVendas, resCustos] = await Promise.all([
             supabaseClient.from('sabores').select('*').order('nome'),
             supabaseClient.from('vendas').select('*').order('data_compra', { ascending: false }),
@@ -63,10 +59,11 @@ async function carregarDadosDoBanco() {
 
         if(document.getElementById('totalSaldo')) atualizarDashboard();
         if(document.getElementById('tabelaClientes')) renderizarTabelaClientes();
+        if(document.getElementById('saborVenda') && !document.getElementById('totalSaldo')) renderizarFormularios();
 
     } catch (error) {
         console.error("Erro ao puxar dados do Supabase:", error);
-        alert("Erro de conexão com o banco de dados. Verifique se colou as chaves corretamente.");
+        alert("Erro de conexão com o banco de dados. Verifique as chaves.");
     }
 }
 
@@ -139,14 +136,25 @@ function renderizarFormularios() {
     if(listaSaboresAtual) listaSaboresAtual.innerHTML = '';
 
     dbSabores.forEach(sabor => {
-        if(selectVenda) selectVenda.appendChild(new Option(sabor.nome, sabor.id)); 
+        const precoDb = Number(sabor.preco) || 12;
+        const textoVenda = `${sabor.nome} (${formatarMoeda(precoDb)})`;
+
+        if(selectVenda) selectVenda.appendChild(new Option(textoVenda, sabor.id)); 
         if(selectProducao) selectProducao.appendChild(new Option(sabor.nome, sabor.id));
         
         if(listaSaboresAtual) {
             listaSaboresAtual.innerHTML += `
-                <div class="flavor-item">
-                    <span>${sabor.nome}</span>
-                    <button type="button" class="btn-delete" onclick="removerSabor('${sabor.id}', ${sabor.quantidade})" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                <div class="flavor-item" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding: 15px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color);">
+                    <div style="flex:1;">
+                        <strong style="color: var(--text-main); font-size: 0.95rem;">${sabor.nome}</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                            <span style="color: var(--profit-mint); font-weight: bold;">${formatarMoeda(precoDb)}</span> | Estoque: ${sabor.quantidade} un
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button type="button" class="theme-btn" style="width:35px; height:35px; font-size:0.9rem;" onclick="editarPreco('${sabor.id}', '${sabor.nome}', ${precoDb})" title="Editar Preço"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" class="theme-btn" style="width:35px; height:35px; font-size:0.9rem; color:var(--cost-wine);" onclick="removerSabor('${sabor.id}', ${sabor.quantidade})" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                    </div>
                 </div>`;
         }
     });
@@ -163,9 +171,9 @@ function renderizarFormularios() {
     if(selectDivida) {
         if(dividas.length === 0) {
             selectDivida.appendChild(new Option("Nenhuma dívida pendente 🎉", ""));
-            document.querySelector('.btn-receber').disabled = true;
+            if(document.querySelector('.btn-receber')) document.querySelector('.btn-receber').disabled = true;
         } else {
-            document.querySelector('.btn-receber').disabled = false;
+            if(document.querySelector('.btn-receber')) document.querySelector('.btn-receber').disabled = false;
             dividas.forEach(d => {
                 const texto = `${d.cliente_nome} - ${formatarMoeda(d.valor_total)} (${d.sabor})`;
                 selectDivida.appendChild(new Option(texto, d.id)); 
@@ -175,7 +183,7 @@ function renderizarFormularios() {
 }
 
 // ==========================================
-// 5. EVENTOS DOS FORMULÁRIOS (ENVIANDO PRA NUVEM)
+// 5. EVENTOS DOS FORMULÁRIOS
 // ==========================================
 
 const formVenda = document.getElementById('formVenda');
@@ -187,21 +195,22 @@ if(formVenda) {
         const nomeCliente = document.getElementById('nomeCliente').value;
         const selectSabor = document.getElementById('saborVenda');
         const saborId = selectSabor.value;
-        const saborNome = selectSabor.options[selectSabor.selectedIndex].text;
         const qtd = parseInt(document.getElementById('qtdVenda').value);
         const status = document.getElementById('statusPagamento').value;
         const dataPgto = document.getElementById('dataPagamento').value;
-        const valorVenda = qtd * PRECO_BOLO;
+
+        // Pega as infos exatas do sabor escolhido
+        const saborDb = dbSabores.find(s => s.id === saborId);
+        const precoFinal = Number(saborDb.preco) || 12;
+        const valorVenda = qtd * precoFinal; // CALCULA COM O PREÇO DO SABOR
+        const novoEstoque = saborDb.quantidade - qtd;
 
         btn.innerHTML = 'Salvando na Nuvem... <i class="fa-solid fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
-        const saborDb = dbSabores.find(s => s.id === saborId);
-        const novoEstoque = saborDb.quantidade - qtd;
-
         await Promise.all([
             supabaseClient.from('vendas').insert([{
-                cliente_nome: nomeCliente, sabor: saborNome, quantidade: qtd,
+                cliente_nome: nomeCliente, sabor: saborDb.nome, quantidade: qtd,
                 valor_total: valorVenda, status_pagamento: status,
                 data_pagamento_esperada: status === 'pendente' ? dataPgto : null
             }]),
@@ -209,7 +218,8 @@ if(formVenda) {
         ]);
 
         animarBotaoEAtualizar(btn, 'Registrar Venda <i class="fa-solid fa-cart-arrow-down"></i>', this);
-        document.getElementById('divDataPagamento').style.display = 'none';
+        const divDataPgto = document.getElementById('divDataPagamento');
+        if(divDataPgto) divDataPgto.style.display = 'none';
     });
 }
 
@@ -232,12 +242,14 @@ if(formProducao) {
     });
 }
 
+// CADASTRAR NOVO SABOR COM PREÇO
 const formSabores = document.getElementById('formSabores');
 if(formSabores) {
     formSabores.addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = this.querySelector('.btn-submit');
         const novoSabor = document.getElementById('novoSabor').value.trim();
+        const precoNovoSabor = parseFloat(document.getElementById('precoNovoSabor').value);
 
         const existe = dbSabores.some(s => s.nome.toLowerCase() === novoSabor.toLowerCase());
         if(existe) { alert('Esse sabor já está cadastrado!'); return; }
@@ -245,9 +257,23 @@ if(formSabores) {
         btn.innerHTML = 'Cadastrando... <i class="fa-solid fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
-        await supabaseClient.from('sabores').insert([{ nome: novoSabor, quantidade: 0 }]);
+        await supabaseClient.from('sabores').insert([{ nome: novoSabor, quantidade: 0, preco: precoNovoSabor }]);
         animarBotaoEAtualizar(btn, 'Adicionar Sabor <i class="fa-solid fa-plus"></i>', this);
     });
+}
+
+// FUNÇÃO MÁGICA: EDITAR PREÇO DO SABOR
+window.editarPreco = async function(idSabor, nomeSabor, precoAtual) {
+    const novoPreco = prompt(`Qual o novo preço de venda para o sabor "${nomeSabor}"?`, precoAtual);
+    
+    // Verifica se a pessoa digitou um número válido e não cancelou
+    if (novoPreco !== null && novoPreco.trim() !== "" && !isNaN(novoPreco)) {
+        const precoFormatado = parseFloat(novoPreco);
+        await supabaseClient.from('sabores').update({ preco: precoFormatado }).eq('id', idSabor);
+        carregarDadosDoBanco(); // Atualiza a tela pra mostrar o novo preço
+    } else if (novoPreco !== null) {
+        alert("Por favor, digite um valor numérico válido (ex: 15.50).");
+    }
 }
 
 window.removerSabor = async function(idSabor, qtdEstoque) {
@@ -272,7 +298,7 @@ if(formReceber) {
         btn.disabled = true;
 
         await supabaseClient.from('vendas').update({ status_pagamento: 'pago' }).eq('id', idVenda);
-        animarBotaoEAtualizar(btn, 'Confirmar Recebimento <i class="fa-solid fa-hand-holding-dollar"></i>', this);
+        animarBotaoEAtualizar(btn, 'Confirmar Pagamento <i class="fa-solid fa-hand-holding-dollar"></i>', this);
     });
 }
 
@@ -288,12 +314,12 @@ if(formCusto) {
         btn.disabled = true;
 
         await supabaseClient.from('custos').insert([{ descricao: desc, valor: valor }]);
-        animarBotaoEAtualizar(btn, 'Adicionar Custo <i class="fa-solid fa-minus"></i>', this);
+        animarBotaoEAtualizar(btn, 'Registrar Despesa <i class="fa-solid fa-minus"></i>', this);
     });
 }
 
 // ==========================================
-// 6. FUNÇÕES EXTRAS (TABELA DE CLIENTES, GRÁFICO, ABAS)
+// 6. FUNÇÕES EXTRAS
 // ==========================================
 
 function animarBotaoEAtualizar(btn, textoOriginal, form) {
@@ -352,7 +378,7 @@ if(statusPgto) {
 }
 
 window.showTab = function(tab) {
-    const tabs = ['venda', 'producao', 'receber', 'custo', 'sabores'];
+    const tabs = ['producao', 'receber', 'custo', 'sabores'];
     const btns = document.querySelectorAll('.tab-btn');
     tabs.forEach((t, index) => {
         const form = document.getElementById(`form${t.charAt(0).toUpperCase() + t.slice(1)}`);
@@ -364,14 +390,11 @@ window.showTab = function(tab) {
     });
 }
 
-// Gráfico do Chart.js (Paleta Luxuosa)
 function renderizarGrafico(fat = 0, saldo = 0, cust = 0, luc = 0) {
     const canvas = document.getElementById('financeChart');
     if(!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    
-    // Captura as cores do CSS
     const textColor = getComputedStyle(document.body).getPropertyValue('--text-muted').trim();
     const gridColor = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
     
@@ -383,25 +406,13 @@ function renderizarGrafico(fat = 0, saldo = 0, cust = 0, luc = 0) {
             labels: ['Vendido', 'Em Caixa', 'Custos', 'Lucro'],
             datasets: [{
                 data: [fat, saldo, cust, luc],
-                backgroundColor: [
-                    'rgba(212, 122, 138, 0.85)', // Rose Gold (Faturamento)
-                    'rgba(229, 195, 166, 0.85)', // Champagne (Saldo)
-                    'rgba(154, 59, 82, 0.85)',   // Vinho (Custos)
-                    'rgba(78, 154, 129, 0.85)'   // Mint/Emerald (Lucro)
-                ],
-                borderRadius: 12, 
-                borderWidth: 0, 
-                barThickness: window.innerWidth < 768 ? 30 : 50 // Mais fino no celular
+                backgroundColor: ['rgba(212, 122, 138, 0.85)', 'rgba(229, 195, 166, 0.85)', 'rgba(154, 59, 82, 0.85)', 'rgba(78, 154, 129, 0.85)'],
+                borderRadius: 12, borderWidth: 0, barThickness: window.innerWidth < 768 ? 30 : 50
             }]
         },
         options: {
-            responsive: true, 
-            maintainAspectRatio: false, 
-            plugins: { legend: { display: false } },
-            scales: { 
-                y: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { color: gridColor } }, 
-                x: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { display: false } } 
-            }
+            responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+            scales: { y: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { display: false } } }
         }
     });
 }
