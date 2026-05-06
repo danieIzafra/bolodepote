@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes | Ninho & Nutella</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Menu Lateral / Inferior -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-cake-candles"></i>
+                <h2>Bolo Pote Pro</h2>
+            </div>
+            <ul class="nav-links">
+                <li onclick="window.location.href='index.html'"><i class="fa-solid fa-chart-pie"></i> Painel Geral</li>
+                <li onclick="window.location.href='registrar.html'"><i class="fa-solid fa-cart-plus"></i> Registrar</li>
+                <li class="active" onclick="window.location.href='clientes.html'"><i class="fa-solid fa-users"></i> Clientes</li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header>
+                <div>
+                    <h1>Gestão de Clientes</h1>
+                    <p>Histórico de vendas e cobranças pendentes</p>
+                </div>
+                <div class="header-actions">
+                    <button id="themeToggle" class="theme-btn" title="Mudar Tema">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <section class="glass-card" style="width: 100%; overflow-x: auto; padding: 20px;">
+                <h2><i class="fa-solid fa-list-check"></i> Últimas Movimentações</h2>
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Sabor</th>
+                            <th>Qtd</th>
+                            <th>Valor Total</th>
+                            <th>Status</th>
+                            <th>Previsão Pgt.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaClientes">
+                        <!-- Injetado via JS -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

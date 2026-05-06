@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Ninho & Nutella</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Menu Lateral (Vira Menu Inferior no Celular) -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-cake-candles"></i>
+                <h2>Bolo Pote Pro</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active" onclick="window.location.href='index.html'"><i class="fa-solid fa-chart-pie"></i> Painel Geral</li>
+                <li onclick="window.location.href='registrar.html'"><i class="fa-solid fa-cart-plus"></i> Registrar</li>
+                <li onclick="window.location.href='clientes.html'"><i class="fa-solid fa-users"></i> Clientes</li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header>
+                <div>
+                    <h1>Visão Geral</h1>
+                    <p>Controle de Estoque e Finanças</p>
+                </div>
+                <div class="header-actions">
+                    <button id="themeToggle" class="theme-btn" title="Mudar Tema">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- KPIs -->
+            <section class="kpi-grid">
+                <div class="kpi-card saldo">
+                    <div class="kpi-icon"><i class="fa-solid fa-building-columns"></i></div>
+                    <div class="kpi-info"><h3>Saldo em Conta</h3><p id="totalSaldo">R$ 0,00</p></div>
+                </div>
+                <div class="kpi-card pendente">
+                    <div class="kpi-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div class="kpi-info"><h3>A Receber (Fiado)</h3><p id="totalReceber">R$ 0,00</p></div>
+                </div>
+                <div class="kpi-card faturamento">
+                    <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div class="kpi-info"><h3>Total Vendido</h3><p id="totalFaturamento">R$ 0,00</p></div>
+                </div>
+                <div class="kpi-card custos">
+                    <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                    <div class="kpi-info"><h3>Custos Totais</h3><p id="totalCustos">R$ 0,00</p></div>
+                </div>
+                <div class="kpi-card lucro">
+                    <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <div class="kpi-info"><h3>Lucro Projetado</h3><p id="totalLucro">R$ 0,00</p></div>
+                </div>
+                <div class="kpi-card unidades">
+                    <div class="kpi-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="kpi-info"><h3>Bolos Vendidos</h3><p id="totalUnidades">0</p></div>
+                </div>
+            </section>
+
+            <section class="content-grid">
+                <div class="left-column">
+                    <div class="stock-container glass-card">
+                        <h2><i class="fa-solid fa-boxes-stacked"></i> Estoque Pronto para Venda</h2>
+                        <div class="stock-grid" id="stockList"></div>
+                    </div>
+                    <div class="chart-container glass-card">
+                        <h2>Fluxo de Caixa vs Faturamento</h2>
+                        <div class="canvas-wrapper"><canvas id="financeChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Painel Administrativo -->
+                <div class="actions-container glass-card">
+                    <h2>Administração</h2>
+                    
+                    <div class="action-tabs">
+                        <button class="tab-btn active" onclick="showTab('producao')">Produzir</button>
+                        <button class="tab-btn" onclick="showTab('receber')">Receber</button>
+                        <button class="tab-btn" onclick="showTab('custo')">Custo</button>
+                        <button class="tab-btn" onclick="showTab('sabores')"><i class="fa-solid fa-gear"></i> Sabores</button>
+                    </div>
+
+                    <form id="formProducao" class="action-form">
+                        <div class="input-group">
+                            <label>Sabor Produzido</label>
+                            <select id="saborProducao" required></select>
+                        </div>
+                        <div class="input-group">
+                            <label>Quantidade de Potes Prontos</label>
+                            <input type="number" id="qtdProducao" min="1" required placeholder="Ex: 10">
+                        </div>
+                        <button type="submit" class="btn-submit btn-producao">Adicionar ao Estoque <i class="fa-solid fa-plus"></i></button>
+                    </form>
+
+                    <form id="formReceber" class="action-form" style="display: none;">
+                        <div class="input-group">
+                            <label>Selecione a Dívida (Cliente - Valor)</label>
+                            <select id="dividaSelecionada" required></select>
+                        </div>
+                        <p class="help-text">Ao confirmar, a dívida será paga e o valor entrará no seu saldo.</p>
+                        <button type="submit" class="btn-submit btn-receber">Confirmar Pagamento <i class="fa-solid fa-hand-holding-dollar"></i></button>
+                    </form>
+
+                    <form id="formCusto" class="action-form" style="display: none;">
+                        <div class="input-group">
+                            <label>Descrição do Custo</label>
+                            <input type="text" id="descCusto" required placeholder="Ex: Leite Moça, Embalagens...">
+                        </div>
+                        <div class="input-group">
+                            <label>Valor (R$)</label>
+                            <input type="number" id="valorCusto" min="0.01" step="0.01" required placeholder="Ex: 50.00">
+                        </div>
+                        <button type="submit" class="btn-submit btn-custo">Registrar Despesa <i class="fa-solid fa-minus"></i></button>
+                    </form>
+
+                    <form id="formSabores" class="action-form" style="display: none;">
+                        <div class="input-group">
+                            <label>Cadastrar Novo Sabor</label>
+                            <input type="text" id="novoSabor" required placeholder="Ex: Ninho com Morango">
+                        </div>
+                        <button type="submit" class="btn-submit btn-producao">Adicionar Sabor <i class="fa-solid fa-plus"></i></button>
+                        
+                        <div class="flavor-manager">
+                            <p class="help-text" style="margin-top: 20px;">Sabores Existentes:</p>
+                            <div id="listaSaboresAtual" class="flavor-list"></div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // Ajuste das abas exclusivo para o index.html
+        window.showTab = function(tab) {
+            const tabs = ['producao', 'receber', 'custo', 'sabores'];
+            const btns = document.querySelectorAll('.tab-btn');
+            tabs.forEach((t, index) => {
+                const form = document.getElementById(`form${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                if(form) form.style.display = (t === tab) ? 'block' : 'none';
+                if(btns[index]) {
+                    if(t === tab) btns[index].classList.add('active');
+                    else btns[index].classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

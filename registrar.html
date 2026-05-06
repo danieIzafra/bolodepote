@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Venda | Ninho & Nutella</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Menu Lateral / Inferior -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-cake-candles"></i>
+                <h2>Bolo Pote Pro</h2>
+            </div>
+            <ul class="nav-links">
+                <li onclick="window.location.href='index.html'"><i class="fa-solid fa-chart-pie"></i> Painel Geral</li>
+                <li class="active" onclick="window.location.href='registrar.html'"><i class="fa-solid fa-cart-plus"></i> Registrar</li>
+                <li onclick="window.location.href='clientes.html'"><i class="fa-solid fa-users"></i> Clientes</li>
+            </ul>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header>
+                <div>
+                    <h1>Nova Venda</h1>
+                    <p>Registre a saída de bolos rápidos</p>
+                </div>
+                <div class="header-actions">
+                    <button id="themeToggle" class="theme-btn" title="Mudar Tema">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Card Centralizado e Adaptado para Mobile -->
+            <section style="display: flex; justify-content: center; width: 100%;">
+                <div class="actions-container glass-card" style="width: 100%; max-width: 600px;">
+                    <h2 style="justify-content: center;"><i class="fa-solid fa-bag-shopping"></i> Detalhes da Compra</h2>
+                    
+                    <form id="formVenda" class="action-form" style="margin-top: 30px;">
+                        <div class="input-group">
+                            <label>Nome do Cliente</label>
+                            <input type="text" id="nomeCliente" required placeholder="Ex: Maria Eduarda">
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Sabor do Bolo</label>
+                                <select id="saborVenda" required></select>
+                            </div>
+                            <div class="input-group">
+                                <label>Qtd (R$ 12 cada)</label>
+                                <input type="number" id="qtdVenda" min="1" required placeholder="Ex: 2">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Pagamento</label>
+                                <select id="statusPagamento" required>
+                                    <option value="pago">Pago na hora</option>
+                                    <option value="pendente">Fiado (A receber)</option>
+                                </select>
+                            </div>
+                            <div class="input-group" id="divDataPagamento" style="display: none;">
+                                <label>Previsão de Pagamento</label>
+                                <input type="date" id="dataPagamento">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit btn-venda" style="margin-top: 20px; font-size: 1.1rem;">
+                            Confirmar Venda <i class="fa-solid fa-cart-arrow-down"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
