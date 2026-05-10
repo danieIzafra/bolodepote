@@ -257,6 +257,7 @@ if(formSabores) {
         btn.innerHTML = 'Cadastrando... <i class="fa-solid fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
+        // Salva o nome, define o estoque inicial como 0, e salva o preço
         await supabaseClient.from('sabores').insert([{ nome: novoSabor, quantidade: 0, preco: precoNovoSabor }]);
         animarBotaoEAtualizar(btn, 'Adicionar Sabor <i class="fa-solid fa-plus"></i>', this);
     });
