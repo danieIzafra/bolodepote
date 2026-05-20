@@ -34,12 +34,12 @@ if(themeToggleBtn) {
 }
 
 // ==========================================
-// 3. BUSCANDO DADOS DO BANCO (NUVEM)
+// 3. BUSCANDO DADOS DO BANCO (NUVEM) E VARIÁVEIS DOS GRÁFICOS
 // ==========================================
 let dbSabores = [];
 let dbVendas = [];
 let dbCustos = [];
-let meuGrafico;
+let financeChartObj, clientesChartObj, saboresChartObj; // Variáveis dos 3 gráficos
 
 async function carregarDadosDoBanco() {
     try {
@@ -98,8 +98,8 @@ function atualizarDashboard() {
     document.getElementById('totalLucro').innerText = formatarMoeda(lucroProjetado);
     document.getElementById('totalUnidades').innerText = unidadesVendidas;
 
-    document.getElementById('totalSaldo').style.color = saldoReal < 0 ? 'var(--cost-red)' : 'var(--text-main)';
-    document.getElementById('totalLucro').style.color = lucroProjetado < 0 ? 'var(--cost-red)' : 'var(--text-main)';
+    document.getElementById('totalSaldo').style.color = saldoReal < 0 ? 'var(--cost-wine)' : 'var(--text-main)';
+    document.getElementById('totalLucro').style.color = lucroProjetado < 0 ? 'var(--cost-wine)' : 'var(--text-main)';
 
     renderizarEstoque();
     renderizarFormularios();
@@ -144,7 +144,7 @@ function renderizarFormularios() {
         
         if(listaSaboresAtual) {
             listaSaboresAtual.innerHTML += `
-                <div class="flavor-item" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding: 15px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border-color);">
+                <div class="flavor-item" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.3); border: 1px solid var(--border-soft);">
                     <div style="flex:1;">
                         <strong style="color: var(--text-main); font-size: 0.95rem;">${sabor.nome}</strong>
                         <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
@@ -199,10 +199,9 @@ if(formVenda) {
         const status = document.getElementById('statusPagamento').value;
         const dataPgto = document.getElementById('dataPagamento').value;
 
-        // Pega as infos exatas do sabor escolhido
         const saborDb = dbSabores.find(s => s.id === saborId);
         const precoFinal = Number(saborDb.preco) || 12;
-        const valorVenda = qtd * precoFinal; // CALCULA COM O PREÇO DO SABOR
+        const valorVenda = qtd * precoFinal; 
         const novoEstoque = saborDb.quantidade - qtd;
 
         btn.innerHTML = 'Salvando na Nuvem... <i class="fa-solid fa-spinner fa-spin"></i>';
@@ -242,7 +241,6 @@ if(formProducao) {
     });
 }
 
-// CADASTRAR NOVO SABOR COM PREÇO
 const formSabores = document.getElementById('formSabores');
 if(formSabores) {
     formSabores.addEventListener('submit', async function(e) {
@@ -257,21 +255,18 @@ if(formSabores) {
         btn.innerHTML = 'Cadastrando... <i class="fa-solid fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
-        // Salva o nome, define o estoque inicial como 0, e salva o preço
         await supabaseClient.from('sabores').insert([{ nome: novoSabor, quantidade: 0, preco: precoNovoSabor }]);
         animarBotaoEAtualizar(btn, 'Adicionar Sabor <i class="fa-solid fa-plus"></i>', this);
     });
 }
 
-// FUNÇÃO MÁGICA: EDITAR PREÇO DO SABOR
 window.editarPreco = async function(idSabor, nomeSabor, precoAtual) {
     const novoPreco = prompt(`Qual o novo preço de venda para o sabor "${nomeSabor}"?`, precoAtual);
     
-    // Verifica se a pessoa digitou um número válido e não cancelou
     if (novoPreco !== null && novoPreco.trim() !== "" && !isNaN(novoPreco)) {
         const precoFormatado = parseFloat(novoPreco);
         await supabaseClient.from('sabores').update({ preco: precoFormatado }).eq('id', idSabor);
-        carregarDadosDoBanco(); // Atualiza a tela pra mostrar o novo preço
+        carregarDadosDoBanco(); 
     } else if (novoPreco !== null) {
         alert("Por favor, digite um valor numérico válido (ex: 15.50).");
     }
@@ -320,7 +315,7 @@ if(formCusto) {
 }
 
 // ==========================================
-// 6. FUNÇÕES EXTRAS
+// 6. FUNÇÕES EXTRAS E GRÁFICOS INTELIGENTES
 // ==========================================
 
 function animarBotaoEAtualizar(btn, textoOriginal, form) {
@@ -331,35 +326,53 @@ function animarBotaoEAtualizar(btn, textoOriginal, form) {
 }
 
 function renderizarTabelaClientes() {
-    const tbody = document.getElementById('tabelaClientes');
-    if(!tbody) return;
-    tbody.innerHTML = '';
+    const container = document.getElementById('tabelaClientes');
+    if(!container) return;
+    container.innerHTML = '';
 
     if(dbVendas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhuma venda registrada ainda.</td></tr>';
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); width: 100%; padding: 20px;">Nenhuma venda registrada ainda.</p>';
         return;
     }
 
     dbVendas.forEach(venda => {
-        const badgeClass = venda.status_pagamento === 'pago' ? 'badge-pago' : 'badge-pendente';
-        const txtStatus = venda.status_pagamento === 'pago' ? 'Pago' : 'Fiado';
+        const isPago = venda.status_pagamento === 'pago';
+        const badgeClass = isPago ? 'badge-pago' : 'badge-pendente';
+        const txtStatus = isPago ? 'Pago' : 'Fiado';
+        const iconStatus = isPago ? '<i class="fa-solid fa-check-double"></i>' : '<i class="fa-solid fa-clock-rotate-left"></i>';
         
-        let dataPrevista = '-';
-        if(venda.status_pagamento === 'pendente' && venda.data_pagamento_esperada) {
+        let dataPrevista = '';
+        if(!isPago && venda.data_pagamento_esperada) {
             const partes = venda.data_pagamento_esperada.split('-');
-            if(partes.length === 3) dataPrevista = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            if(partes.length === 3) {
+                dataPrevista = `
+                <div class="previsao-pagamento">
+                    <i class="fa-regular fa-calendar-check"></i> Receber em: ${partes[2]}/${partes[1]}/${partes[0]}
+                </div>`;
+            }
         }
 
-        tbody.innerHTML += `
-            <tr>
-                <td>${formatarData(venda.data_compra)}</td>
-                <td><strong>${venda.cliente_nome}</strong></td>
-                <td>${venda.sabor}</td>
-                <td>${venda.quantidade}</td>
-                <td>${formatarMoeda(venda.valor_total)}</td>
-                <td><span class="badge ${badgeClass}">${txtStatus}</span></td>
-                <td>${dataPrevista}</td>
-            </tr>
+        container.innerHTML += `
+            <div class="app-card-cliente">
+                <div class="card-header">
+                    <div class="cliente-info">
+                        <h3>${venda.cliente_nome}</h3>
+                        <span class="data-compra">${formatarData(venda.data_compra)}</span>
+                    </div>
+                    <span class="badge ${badgeClass}">${iconStatus} ${txtStatus}</span>
+                </div>
+                
+                <div class="card-body">
+                    <div class="pedido-info">
+                        <p><i class="fa-solid fa-cake-candles" style="color: var(--brand-pink);"></i> ${venda.quantidade}x ${venda.sabor}</p>
+                    </div>
+                    <div class="valor-info">
+                        <span class="valor-total">${formatarMoeda(venda.valor_total)}</span>
+                    </div>
+                </div>
+                
+                ${dataPrevista}
+            </div>
         `;
     });
 }
@@ -378,47 +391,135 @@ if(statusPgto) {
     });
 }
 
-window.showTab = function(tab) {
-    const tabs = ['producao', 'receber', 'custo', 'sabores'];
-    const btns = document.querySelectorAll('.tab-btn');
-    tabs.forEach((t, index) => {
-        const form = document.getElementById(`form${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        if(form) form.style.display = (t === tab) ? 'block' : 'none';
-        if(btns[index]) {
-            if(t === tab) btns[index].classList.add('active');
-            else btns[index].classList.remove('active');
-        }
-    });
-}
-
+// NOVA FUNÇÃO DOS 3 GRÁFICOS NO CARROSSEL
 function renderizarGrafico(fat = 0, saldo = 0, cust = 0, luc = 0) {
-    const canvas = document.getElementById('financeChart');
-    if(!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
     const textColor = getComputedStyle(document.body).getPropertyValue('--text-muted').trim();
-    const gridColor = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
+    const gridColor = getComputedStyle(document.body).getPropertyValue('--border-soft').trim();
+    const bgCardCor = getComputedStyle(document.body).getPropertyValue('--bg-card').trim();
     
-    if (meuGrafico) meuGrafico.destroy();
-    
-    meuGrafico = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Vendido', 'Em Caixa', 'Custos', 'Lucro'],
-            datasets: [{
-                data: [fat, saldo, cust, luc],
-                backgroundColor: ['rgba(212, 122, 138, 0.85)', 'rgba(229, 195, 166, 0.85)', 'rgba(154, 59, 82, 0.85)', 'rgba(78, 154, 129, 0.85)'],
-                borderRadius: 12, borderWidth: 0, barThickness: window.innerWidth < 768 ? 30 : 50
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-            scales: { y: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { display: false } } }
-        }
+    // Paleta de cores premium
+    const coresGraficos = [
+        'rgba(216, 92, 123, 0.85)', // Rosa Marca
+        'rgba(217, 160, 91, 0.85)', // Champagne
+        'rgba(62, 136, 99, 0.85)',  // Verde Lucro
+        'rgba(201, 140, 67, 0.85)', // Ouro Pendente
+        'rgba(142, 123, 130, 0.85)' // Muted
+    ];
+
+    // --- 1. Gráfico Financeiro (Barra Vertical) ---
+    const ctxFinance = document.getElementById('financeChart');
+    if(ctxFinance) {
+        if (financeChartObj) financeChartObj.destroy();
+        financeChartObj = new Chart(ctxFinance.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Vendido', 'Em Caixa', 'Custos', 'Lucro'],
+                datasets: [{
+                    data: [fat, saldo, cust, luc],
+                    backgroundColor: coresGraficos,
+                    borderRadius: 12, borderWidth: 0, barThickness: window.innerWidth < 768 ? 30 : 50
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                scales: { 
+                    y: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { color: gridColor } }, 
+                    x: { ticks: { color: textColor, font: {family: 'Montserrat'} }, grid: { display: false } } 
+                }
+            }
+        });
+    }
+
+    // --- LÓGICA DE FILTRAGEM INTELIGENTE DOS DADOS ---
+    const clientesMap = {};
+    const saboresMap = {};
+
+    dbVendas.forEach(venda => {
+        // Tratamento Inteligente de Nomes (Remove espaços soltos, acentos e transforma para minúsculo para comparar)
+        let nomeLimpo = venda.cliente_nome.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        // Coloca a primeira letra Maiúscula para ficar bonito no gráfico
+        let nomeExibicao = nomeLimpo.charAt(0).toUpperCase() + nomeLimpo.slice(1);
+
+        if (!clientesMap[nomeExibicao]) clientesMap[nomeExibicao] = 0;
+        clientesMap[nomeExibicao] += Number(venda.quantidade);
+
+        let nomeSabor = venda.sabor;
+        if (!saboresMap[nomeSabor]) saboresMap[nomeSabor] = 0;
+        saboresMap[nomeSabor] += Number(venda.quantidade);
     });
+
+    // Pega os Top 5 e ordena do maior para o menor
+    const topClientes = Object.entries(clientesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topSabores = Object.entries(saboresMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+    // --- 2. Gráfico Clientes (Barra Horizontal) ---
+    const ctxClientes = document.getElementById('clientesChart');
+    if(ctxClientes) {
+        if (clientesChartObj) clientesChartObj.destroy();
+        clientesChartObj = new Chart(ctxClientes.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: topClientes.map(c => c[0]),
+                datasets: [{
+                    label: 'Potes Comprados',
+                    data: topClientes.map(c => c[1]),
+                    backgroundColor: coresGraficos[1], // Cor Champagne
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Barra horizontal
+                responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                scales: { 
+                    x: { ticks: { stepSize: 1, color: textColor, font: {family: 'Montserrat'} }, grid: { color: gridColor } }, 
+                    y: { ticks: { color: textColor, font: {family: 'Montserrat', weight: 'bold'} }, grid: { display: false } } 
+                }
+            }
+        });
+    }
+
+    // --- 3. Gráfico Sabores (Doughnut / Rosquinha) ---
+    const ctxSabores = document.getElementById('saboresChart');
+    if(ctxSabores) {
+        if (saboresChartObj) saboresChartObj.destroy();
+        saboresChartObj = new Chart(ctxSabores.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: topSabores.map(s => s[0]),
+                datasets: [{
+                    data: topSabores.map(s => s[1]),
+                    backgroundColor: coresGraficos,
+                    borderWidth: 2,
+                    borderColor: bgCardCor // Fica transparente/vidro onde tem a borda
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'right', 
+                        labels: { color: textColor, font: {family: 'Montserrat'}, boxWidth: 12, padding: 15 } 
+                    }
+                },
+                cutout: '65%' 
+            }
+        });
+    }
 }
 
 // ==========================================
 // 7. INICIALIZAÇÃO
 // ==========================================
 window.onload = carregarDadosDoBanco;
+// ==========================================
+// 8. CONTROLE DAS SETAS DO CARROSSEL
+// ==========================================
+window.moverCarrossel = function(direcao) {
+    const carrossel = document.getElementById('chartsCarousel');
+    if(carrossel) {
+        // Pega a largura exata de 1 card visível + o espaçamento (gap)
+        const larguraCard = carrossel.clientWidth; 
+        // Move o carrossel (direcao: -1 para esquerda, 1 para direita)
+        carrossel.scrollBy({ left: larguraCard * direcao, behavior: 'smooth' });
+    }
+}

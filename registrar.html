@@ -2,50 +2,58 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no, viewport-fit=cover">
     <title>Registrar Venda | Ninho & Nutella</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bolo Pote Pro">
+    <meta name="apple-mobile-web-app-title" content="Registrar">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
+    <div class="top-app-bar">
+        <div class="top-bar-content">
+            <div class="app-logo-wrapper">
+                <img src="logo.png" alt="Logo Confeitaria" class="app-logo-img">
+            </div>
+            <button id="themeToggle" class="theme-btn-top" title="Mudar Tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </div>
+
     <div class="dashboard-container">
-        <!-- Menu Lateral / Inferior -->
         <aside class="sidebar">
-            <div class="logo">
-                <i class="fa-solid fa-cake-candles"></i>
-                <h2>Bolo Pote Pro</h2>
+            <div class="brand-logo-container">
+                <img src="logo.png" alt="Logo Oficial" class="sidebar-logo">
             </div>
             <ul class="nav-links">
-                <li onclick="window.location.href='index.html'"><i class="fa-solid fa-chart-pie"></i> Painel Geral</li>
-                <li class="active" onclick="window.location.href='registrar.html'"><i class="fa-solid fa-cart-plus"></i> Registrar</li>
-                <li onclick="window.location.href='clientes.html'"><i class="fa-solid fa-users"></i> Clientes</li>
+                <li onclick="window.location.href='index.html'">
+                    <i class="fa-solid fa-chart-pie"></i> <span class="menu-text">Painel</span>
+                </li>
+                <li class="active" onclick="window.location.href='registrar.html'">
+                    <i class="fa-solid fa-plus"></i> <span class="menu-text">Registrar</span>
+                </li>
+                <li onclick="window.location.href='clientes.html'">
+                    <i class="fa-solid fa-users"></i> <span class="menu-text">Clientes</span>
+                </li>
             </ul>
         </aside>
 
-        <!-- Conteúdo Principal -->
         <main class="main-content">
             <header>
                 <div>
                     <h1>Nova Venda</h1>
                     <p>Registre a saída de bolos rápidos</p>
                 </div>
-                <div class="header-actions">
-                    <button id="themeToggle" class="theme-btn" title="Mudar Tema">
-                        <i class="fa-solid fa-moon"></i>
-                    </button>
-                </div>
             </header>
 
-            <!-- Card Centralizado e Adaptado para Mobile -->
             <section style="display: flex; justify-content: center; width: 100%;">
                 <div class="actions-container glass-card" style="width: 100%; max-width: 600px;">
-                    <h2 style="justify-content: center;"><i class="fa-solid fa-bag-shopping"></i> Detalhes da Compra</h2>
+                    <h2 style="justify-content: center; text-align: center;"><i class="fa-solid fa-bag-shopping"></i> Detalhes da Compra</h2>
                     
                     <form id="formVenda" class="action-form" style="margin-top: 30px;">
                         <div class="input-group">
@@ -75,7 +83,7 @@
                                 <input type="date" id="dataPagamento">
                             </div>
                         </div>
-                        <button type="submit" class="btn-submit btn-venda" style="margin-top: 20px; font-size: 1.1rem;">
+                        <button type="submit" class="btn-submit btn-venda" style="margin-top: 20px;">
                             Confirmar Venda <i class="fa-solid fa-cart-arrow-down"></i>
                         </button>
                     </form>

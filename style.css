@@ -1,49 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600;1,700&display=swap');
 
 :root {
-    /* Paleta Extraída da Logo LF Confeitaria - Fundo Humanizado e Rosa Elegante */
-    --bg-main: #FAF7F5; /* Fundo off-white inspirado na textura da imagem */
-    --bg-card: #FFFFFF;
+    /* Paleta Luxuosa e Vibrante - Fundo com gradiente premium */
+    --bg-gradient: linear-gradient(135deg, #FAF5F7 0%, #F0E6E8 100%);
+    --bg-card: rgba(255, 255, 255, 0.7); /* Efeito Vidro Real */
     
-    --brand-pink: #DE7087; /* Rosa vibrante e chique da logo */
-    --brand-pink-light: #FBEAF0;
-    --brand-pink-dark: #B94C63;
+    --brand-pink: #D85C7B; /* Rosa mais vibrante e imponente */
+    --brand-pink-light: #FCEEF1;
+    --brand-pink-dark: #A63C55;
     
-    --text-main: #3A2B30; /* Marrom acinzentado escuro para alto contraste e sofisticação */
+    --text-main: #2D1E22; /* Tom mais profundo para alto contraste */
     --text-muted: #8E7B82; 
     
-    --border-soft: #F0E6E8;
-    --shadow-soft: rgba(222, 112, 135, 0.08);
-    --shadow-hover: rgba(222, 112, 135, 0.15);
+    --border-soft: rgba(255, 255, 255, 0.6);
+    --shadow-soft: 0 8px 32px rgba(216, 92, 123, 0.08);
+    --shadow-hover: 0 12px 40px rgba(216, 92, 123, 0.20);
     
     /* Cores Financeiras Refinadas */
-    --champagne: #DBC1AD;
-    --profit-mint: #549877;
-    --cost-wine: #B94C63;
-    --pending-gold: #C29B6C;
+    --champagne: #D9A05B;
+    --profit-mint: #3E8863;
+    --cost-wine: #D85C7B;
+    --pending-gold: #C98C43;
 }
 
 body.dark-mode {
-    /* Paleta Luxo Noturno - Fundo profundo e focado */
-    --bg-main: #161213;
-    --bg-card: #201A1C;
+    /* Paleta Luxo Noturno */
+    --bg-gradient: linear-gradient(135deg, #1A1416 0%, #261D20 100%);
+    --bg-card: rgba(30, 22, 25, 0.65);
     
-    --brand-pink: #E48599; 
+    --brand-pink: #E87A96; 
     --brand-pink-light: #3D232A;
     --brand-pink-dark: #F0AEC0;
     
-    --text-main: #F7EFEF;
+    --text-main: #FDF9FA;
     --text-muted: #A49397;
     
-    --border-soft: #312629;
-    --shadow-soft: rgba(0, 0, 0, 0.3);
-    --shadow-hover: rgba(228, 133, 153, 0.12);
+    --border-soft: rgba(255, 255, 255, 0.05);
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-hover: 0 15px 45px rgba(232, 122, 150, 0.15);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 /* ==========================================
-   BASE & TIPOGRAFIA
+   BASE & TIPOGRAFIA (TRAVA MODO APLICATIVO)
    ========================================== */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -51,17 +51,27 @@ body.dark-mode {
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-main); }
-::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(216, 92, 123, 0.3); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--brand-pink); }
 
+/* TRAVA RIGOROSA PARA COMPORTAMENTO DE APP NATIVO (SEM ZOOM E SEM SCROLL HORIZONTAL) */
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important; /* Impede vazar na lateral */
+    overscroll-behavior-x: none; /* Tira o efeito "elástico" indesejado no iOS */
+    touch-action: pan-y; /* Permite estritamente gestos verticais */
+    -webkit-text-size-adjust: 100%; /* Bloqueia redimensionamento automático de fonte */
+}
+
 body {
-    background-color: var(--bg-main);
+    background: var(--bg-gradient);
     color: var(--text-main);
     font-family: 'Montserrat', sans-serif;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background 0.4s ease, color 0.4s ease;
     min-height: 100vh;
-    overflow-x: hidden;
+    position: relative;
 }
 
 h1, h2 { 
@@ -69,34 +79,30 @@ h1, h2 {
     letter-spacing: 0.5px; 
 }
 
-.dashboard-container { display: flex; min-height: 100vh; }
+.dashboard-container { 
+    display: flex; 
+    min-height: 100vh; 
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
 
 /* --- SIDEBAR (DESKTOP) --- */
 .sidebar {
     width: 280px;
     background: var(--bg-card);
     border-right: 1px solid var(--border-soft);
-    padding: 40px 25px;
+    padding: 30px 25px;
     display: flex;
     flex-direction: column;
-    gap: 50px;
     z-index: 100;
-}
-
-.logo { 
-    display: flex; align-items: center; justify-content: center; gap: 12px; 
-    font-size: 1.4rem; font-family: 'Playfair Display', serif; 
-    color: var(--brand-pink); font-weight: 700;
-    letter-spacing: 1px; text-align: center;
-}
-.logo i { 
-    font-size: 2rem; 
-    color: var(--brand-pink);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .nav-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .nav-links li { 
-    padding: 14px 20px; border-radius: 12px; color: var(--text-muted); 
+    padding: 14px 20px; border-radius: 16px; color: var(--text-muted); 
     font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 15px;
     transition: all 0.3s ease;
     font-size: 0.95rem;
@@ -108,11 +114,20 @@ h1, h2 {
 .nav-links li.active { 
     background: var(--brand-pink);
     color: #FFF; 
-    box-shadow: 0 8px 20px var(--shadow-hover);
+    box-shadow: 0 8px 25px var(--shadow-hover);
 }
 
 /* --- MAIN CONTENT (DESKTOP) --- */
-.main-content { flex: 1; padding: 45px 55px; overflow-y: auto; padding-bottom: 100px;}
+.main-content { 
+    flex: 1; 
+    padding: 45px 55px; 
+    overflow-y: auto; 
+    overflow-x: hidden;
+    padding-bottom: 100px;
+    width: 100%;
+    max-width: 100%;
+}
+
 header { 
     display: flex; justify-content: space-between; align-items: center; 
     margin-bottom: 45px; 
@@ -121,30 +136,21 @@ header {
 header h1 { font-size: 2.4rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
 header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 
-.header-actions { display: flex; align-items: center; gap: 20px; }
-.theme-btn { 
-    background: var(--bg-card); border: 1px solid var(--border-soft); 
-    color: var(--brand-pink); width: 48px; height: 48px; border-radius: 50%; 
-    cursor: pointer; font-size: 1.2rem; transition: 0.3s ease;
-    box-shadow: 0 4px 15px var(--shadow-soft);
-}
-.theme-btn:hover { 
-    background: var(--brand-pink); color: #FFF; 
-    transform: translateY(-3px); box-shadow: 0 8px 20px var(--shadow-hover); 
-}
-
-/* --- CARDS (BENTO UI STYLE) --- */
+/* --- CARDS (GLASSMORPHISM AVANÇADO) --- */
 .glass-card {
     background: var(--bg-card);
     border: 1px solid var(--border-soft);
-    border-radius: 24px;
+    border-radius: 28px;
     padding: 35px;
-    box-shadow: 0 10px 30px var(--shadow-soft);
-    transition: box-shadow 0.3s ease;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
     animation: fadeInUp 0.6s ease backwards;
     animation-delay: 0.1s;
+    width: 100%;
 }
-.glass-card:hover { box-shadow: 0 15px 40px var(--shadow-hover); }
+.glass-card:hover { box-shadow: var(--shadow-hover); }
 .glass-card h2 { font-size: 1.5rem; margin-bottom: 25px; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
 .glass-card h2 i { color: var(--brand-pink); }
 
@@ -153,60 +159,152 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 .kpi-card { 
     background: var(--bg-card); 
     border: 1px solid var(--border-soft);
-    padding: 25px; border-radius: 20px; display: flex; align-items: center; gap: 20px; 
-    box-shadow: 0 8px 20px var(--shadow-soft); 
+    padding: 25px; border-radius: 24px; display: flex; align-items: center; gap: 20px; 
+    box-shadow: var(--shadow-soft); 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     transition: transform 0.3s ease, box-shadow 0.3s ease; 
     position: relative; overflow: hidden;
     animation: fadeInUp 0.5s ease backwards;
 }
-.kpi-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px var(--shadow-hover); }
+.kpi-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
 
-.kpi-icon { 
-    width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; 
-    font-size: 1.6rem; flex-shrink: 0; 
-    background: var(--bg-main);
-    color: var(--brand-pink);
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    background: var(--brand-pink);
+    filter: blur(40px);
+    opacity: 0.12;
+    border-radius: 50%;
+    z-index: 0;
 }
 
-.saldo .kpi-icon { background: rgba(219, 193, 173, 0.15); color: var(--champagne); }
-.pendente .kpi-icon { background: rgba(194, 155, 108, 0.15); color: var(--pending-gold); }
-.faturamento .kpi-icon { background: var(--brand-pink-light); color: var(--brand-pink); }
-.custos .kpi-icon { background: rgba(185, 76, 99, 0.15); color: var(--cost-wine); }
-.lucro .kpi-icon { background: rgba(84, 152, 119, 0.15); color: var(--profit-mint); }
-.unidades .kpi-icon { background: rgba(142, 123, 130, 0.15); color: var(--text-muted); }
+.kpi-icon, .kpi-info { position: relative; z-index: 1; }
+
+.kpi-icon { 
+    width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; 
+    font-size: 1.6rem; flex-shrink: 0; 
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--brand-pink);
+    border: 1px solid var(--border-soft);
+}
+
+.saldo .kpi-icon { background: rgba(217, 160, 91, 0.15); color: var(--champagne); border-color: rgba(217, 160, 91, 0.2); }
+.pendente .kpi-icon { background: rgba(201, 140, 67, 0.15); color: var(--pending-gold); border-color: rgba(201, 140, 67, 0.2); }
+.faturamento .kpi-icon { background: var(--brand-pink-light); color: var(--brand-pink); border-color: rgba(216, 92, 123, 0.2); }
+.custos .kpi-icon { background: rgba(216, 92, 123, 0.15); color: var(--cost-wine); border-color: rgba(216, 92, 123, 0.2); }
+.lucro .kpi-icon { background: rgba(62, 136, 99, 0.15); color: var(--profit-mint); border-color: rgba(62, 136, 99, 0.2); }
+.unidades .kpi-icon { background: rgba(142, 123, 130, 0.15); color: var(--text-muted); border-color: rgba(142, 123, 130, 0.2); }
 
 .kpi-info h3 { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 .kpi-info p { font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-top: 4px; font-family: 'Playfair Display', serif; }
 
 /* --- CONTEÚDO E FORMS --- */
-.content-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 35px; }
-.left-column { display: flex; flex-direction: column; gap: 35px; }
+.content-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 35px; width: 100%; }
+.left-column { display: flex; flex-direction: column; gap: 35px; min-width: 0; }
 
 .stock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; }
 .stock-item { 
-    background: var(--bg-main); border: 1px solid var(--border-soft); 
-    padding: 20px; border-radius: 18px; text-align: center; transition: 0.3s;
+    background: rgba(255, 255, 255, 0.3); border: 1px solid var(--border-soft); 
+    padding: 20px; border-radius: 20px; text-align: center; transition: 0.3s;
+    backdrop-filter: blur(10px);
 }
-.stock-item:hover { border-color: var(--brand-pink); background: var(--brand-pink-light); }
+.stock-item:hover { border-color: var(--brand-pink); background: var(--brand-pink-light); transform: translateY(-3px); }
 .stock-item h4 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; }
 .stock-item span { font-size: 1.8rem; font-weight: 700; color: var(--brand-pink); font-family: 'Playfair Display', serif; }
 .stock-item.empty span { color: var(--cost-wine); }
 
-.canvas-wrapper { position: relative; height: 320px; width: 100%; }
 
+/* ==========================================
+   CARROSSEL DE GRÁFICOS (NAVEGAÇÃO POR SETAS)
+   ========================================== */
+.carousel-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.charts-carousel {
+    display: flex;
+    overflow-x: hidden; /* Remove completamente o deslize com o dedo para evitar bugs */
+    scroll-behavior: smooth; /* Animação fluida e suave pelas setas */
+    gap: 20px;
+    width: 100%;
+    scroll-snap-type: x mandatory;
+    padding: 10px 0;
+}
+
+.chart-card {
+    min-width: 100%; 
+    scroll-snap-align: center;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    justify-content: center;
+    text-align: center;
+}
+
+@media (min-width: 1100px) {
+    .chart-card {
+        min-width: calc(50% - 10px); /* Lado a lado em telas bem grandes */
+    }
+}
+
+/* --- Botões de Navegação das Setas --- */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--brand-pink);
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(216, 92, 123, 0.4);
+    transition: all 0.3s ease;
+}
+
+.carousel-arrow:hover {
+    background: var(--brand-pink-dark);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.left-arrow { left: -15px; }
+.right-arrow { right: -15px; }
+
+.canvas-wrapper { position: relative; height: 320px; width: 100%; max-width: 100%; }
+
+
+/* --- FORMULÁRIOS E ABAS --- */
 .action-tabs { 
     display: flex; gap: 10px; margin-bottom: 30px; 
-    background: var(--bg-main); padding: 6px; border-radius: 16px; 
+    background: rgba(255, 255, 255, 0.2); padding: 8px; border-radius: 20px; 
     border: 1px solid var(--border-soft);
 }
 .tab-btn { 
-    flex: 1; padding: 12px 10px; border: none; border-radius: 12px; 
+    flex: 1; padding: 12px 10px; border: none; border-radius: 14px; 
     background: transparent; font-weight: 600; font-size: 0.85rem; color: var(--text-muted); 
     cursor: pointer; transition: 0.3s;
 }
 .tab-btn.active { 
     background: var(--bg-card); color: var(--brand-pink); 
-    box-shadow: 0 4px 10px var(--shadow-soft);
+    box-shadow: var(--shadow-soft);
     font-weight: 700;
 }
 
@@ -214,96 +312,400 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 .input-group { margin-bottom: 20px; }
 .input-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
 .input-group input, .input-group select { 
-    width: 100%; padding: 16px; border: 1px solid var(--border-soft); border-radius: 16px; 
-    font-size: 1rem; outline: none; background: var(--bg-main); color: var(--text-main); 
+    width: 100%; padding: 16px; border: 1px solid var(--border-soft); border-radius: 18px; 
+    font-size: 1rem; outline: none; background: rgba(255, 255, 255, 0.4); color: var(--text-main); 
     transition: 0.3s; font-family: 'Montserrat', sans-serif; font-weight: 500;
+    backdrop-filter: blur(5px);
 }
 .input-group input:focus, .input-group select:focus { border-color: var(--brand-pink); background: var(--bg-card); box-shadow: 0 0 0 4px var(--brand-pink-light); }
 
 .btn-submit { 
-    width: 100%; padding: 18px; border: none; border-radius: 16px; color: white; 
+    width: 100%; padding: 18px; border: none; border-radius: 18px; color: white; 
     font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.3s; 
     display: flex; justify-content: center; align-items: center; gap: 12px;
+    box-shadow: 0 8px 20px rgba(216, 92, 123, 0.3);
 }
 .btn-venda, .btn-producao { background: var(--brand-pink); }
-.btn-receber { background: var(--champagne); color: #3A2B30; }
-.btn-custo { background: var(--cost-wine); }
-.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow-hover); opacity: 0.9; }
+.btn-receber { background: var(--champagne); color: #3A2B30; box-shadow: 0 8px 20px rgba(217, 160, 91, 0.3); }
+.btn-custo { background: var(--cost-wine); box-shadow: 0 8px 20px rgba(216, 92, 123, 0.3); }
+.btn-submit:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); filter: brightness(1.1); }
 
-/* --- TABELA DE CLIENTES --- */
-.modern-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 10px; }
-.modern-table th { color: var(--text-muted); font-weight: 600; text-align: left; padding: 12px 20px; font-size: 0.85rem; border-bottom: 1px solid var(--border-soft); }
-.modern-table td { padding: 18px 20px; background: var(--bg-main); color: var(--text-main); font-size: 0.95rem; font-weight: 500; transition: 0.3s; }
-.modern-table tr:hover td { background: var(--brand-pink-light); }
-.modern-table tr td:first-child { border-radius: 16px 0 0 16px; }
-.modern-table tr td:last-child { border-radius: 0 16px 16px 0; }
-
-.badge { padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
-.badge-pago { background: rgba(84, 152, 119, 0.1); color: var(--profit-mint); }
-.badge-pendente { background: rgba(194, 155, 108, 0.1); color: var(--pending-gold); }
 
 /* ==========================================
-   RESPONSIVIDADE 100% OTIMIZADA PARA CELULAR
+   ESTILOS DA LISTA DE CLIENTES (CARDS PREMIUM)
+   ========================================== */
+.app-lista-clientes { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    margin-top: 20px; 
+}
+
+.app-card-cliente {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-card-cliente:hover {
+    transform: translateY(-3px);
+    border-color: var(--brand-pink);
+    box-shadow: var(--shadow-hover);
+}
+
+.app-card-cliente .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed var(--border-soft);
+    padding-bottom: 15px;
+}
+
+.app-card-cliente .cliente-info h3 {
+    font-size: 1.15rem;
+    color: var(--text-main);
+    margin-bottom: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.app-card-cliente .data-compra {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-pago {
+    background: rgba(62, 136, 99, 0.15);
+    color: var(--profit-mint);
+    border: 1px solid rgba(62, 136, 99, 0.3);
+}
+
+.badge-pendente {
+    background: rgba(201, 140, 67, 0.15);
+    color: var(--pending-gold);
+    border: 1px solid rgba(201, 140, 67, 0.3);
+}
+
+.app-card-cliente .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.app-card-cliente .pedido-info p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-card-cliente .valor-info .valor-total {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-main);
+    font-family: 'Playfair Display', serif;
+}
+
+.app-card-cliente .previsao-pagamento {
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 0.85rem;
+    color: var(--pending-gold);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (min-width: 768px) {
+    .app-lista-clientes { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+}
+
+
+/* ==========================================
+   NOVO TOPO APP BAR E LOGO (REVOLUÇÃO HÍBRIDA)
+   ========================================== */
+.brand-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.sidebar-logo {
+    max-width: 90%; 
+    max-height: 90px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(216, 92, 123, 0.15));
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+    cursor: pointer;
+}
+
+.sidebar-logo:hover {
+    transform: scale(1.08) rotate(-2deg);
+    filter: drop-shadow(0 12px 20px rgba(216, 92, 123, 0.25));
+}
+
+.top-app-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    pointer-events: none; 
+}
+
+.top-bar-content {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; 
+    padding: 40px 55px; 
+    pointer-events: auto; 
+}
+
+.app-logo-wrapper { display: none; }
+
+.theme-btn-top {
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    color: var(--brand-pink);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
+}
+
+.theme-btn-top:hover {
+    background: var(--brand-pink);
+    color: #FFF;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+
+/* ==========================================
+   RESPONSIVIDADE MÁXIMA PARA CELULAR (UX DE APP NATIVO)
    ========================================== */
 @media (max-width: 1100px) { 
     .content-grid { grid-template-columns: 1fr; } 
 }
 
 @media (max-width: 768px) {
-    /* Aproveita a tela e elimina scrolls horizontais */
-    .main-content { padding: 20px 20px 100px 20px; } 
-    
-    header { margin-bottom: 30px; }
-    header h1 { font-size: 1.8rem; }
-    header p { display: none; }
-    .theme-btn { width: 44px; height: 44px; font-size: 1rem; }
-    
-    /* Menu estilo App de Luxo */
-    .sidebar {
-        flex-direction: row; justify-content: space-around; align-items: center;
-        position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
-        padding: 0 10px; border-right: none; border-radius: 24px 24px 0 0;
-        background: var(--bg-card); border-top: 1px solid var(--border-soft);
-        box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 1000;
+    body { 
+        padding-top: 90px; 
+        padding-bottom: 120px; 
     }
-    .logo { display: none; } 
-    .nav-links { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; padding: 0; }
-    .nav-links li { flex-direction: column; gap: 6px; padding: 10px; font-size: 0.7rem; border-radius: 16px; font-weight: 600; background: transparent;}
-    .nav-links li i { font-size: 1.4rem; }
-    .nav-links li:hover { background: transparent; }
-    .nav-links li.active { background: transparent; color: var(--brand-pink); box-shadow: none; transform: translateY(-3px); }
-
-    /* KPIs Diretos e Elegantes */
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-    .kpi-card { padding: 16px; gap: 12px; flex-direction: column; align-items: flex-start; border-radius: 16px; }
-    .kpi-icon { width: 42px; height: 42px; font-size: 1.2rem; border-radius: 12px; }
-    .kpi-info h3 { font-size: 0.7rem; }
-    .kpi-info p { font-size: 1.4rem; }
-
-    .content-grid { gap: 20px; }
-    .glass-card { padding: 25px 20px; border-radius: 20px; }
-    .glass-card h2 { font-size: 1.3rem; margin-bottom: 20px; }
     
-    .canvas-wrapper { height: 250px; } 
+    .main-content { 
+        padding: 15px;
+        width: 100vw; 
+    } 
+    
+    header { 
+        margin-bottom: 25px; 
+        justify-content: center;
+        text-align: center;
+    }
+    header h1 { font-size: 2rem; margin: 0; }
+    header p { display: none; }
+    
+    /* Configurações da barra superior mobile */
+    .top-app-bar {
+        height: 75px;
+        background: var(--bg-card);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-bottom: 1px solid var(--border-soft);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        pointer-events: auto;
+        width: 100vw;
+    }
 
-    /* Estoque Mobile (Deslizável) */
-    .stock-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; gap: 12px; }
+    .top-bar-content {
+        justify-content: center; 
+        padding: 0 15px;
+        height: 100%;
+        align-items: center;
+        position: relative;
+    }
+
+    .app-logo-wrapper {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    .app-logo-img {
+        height: 50px; 
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 8px rgba(216, 92, 123, 0.15));
+    }
+
+    .theme-btn-top {
+        position: absolute;
+        right: 15px;
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+
+    /* Menu Inferior Flutuante estilo iOS/Android Dashboard */
+    .sidebar {
+        flex-direction: row; justify-content: space-between; align-items: center;
+        position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+        width: 94%; 
+        height: 80px; 
+        padding: 0 20px; 
+        border-radius: 25px;
+        background: var(--bg-card); 
+        border: 1px solid var(--border-soft);
+        backdrop-filter: blur(35px);
+        -webkit-backdrop-filter: blur(35px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2); 
+        z-index: 1000;
+        max-width: 400px; 
+    }
+    
+    .brand-logo-container { display: none; } 
+    .nav-links { flex-direction: row; width: 100%; justify-content: space-between; gap: 0; padding: 0; }
+    
+    .nav-links li { 
+        flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;
+        color: var(--text-muted); padding: 5px; background: transparent; font-size: 0.8rem; font-weight: 700;
+    }
+    .nav-links li i { font-size: 1.6rem; transition: transform 0.3s ease; }
+    
+    .nav-links li.active { background: transparent; color: var(--brand-pink); box-shadow: none; }
+    .nav-links li.active i { transform: translateY(-4px); }
+
+    /* Botão Flutuante Centralizado (Registrar Venda) */
+    .nav-links li:nth-child(2) {
+        position: relative;
+        top: -30px; 
+        background: var(--brand-pink);
+        color: white;
+        width: 75px; 
+        height: 75px; 
+        border-radius: 50%;
+        justify-content: center;
+        box-shadow: 0 12px 30px rgba(216, 92, 123, 0.5);
+        border: 6px solid #F6EDF0; 
+        flex: none;
+    }
+    
+    body.dark-mode .nav-links li:nth-child(2) { border-color: #1F181B; }
+    
+    .nav-links li:nth-child(2) i { font-size: 1.8rem; color: white; margin: 0; }
+    .nav-links li:nth-child(2) .menu-text { display: none; } 
+
+    /* GRADE INTELIGENTE DE KPIs 2x3 */
+    .kpi-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px; 
+        margin-bottom: 25px;
+        width: 100%;
+    }
+    
+    .kpi-card { 
+        min-width: unset; 
+        padding: 16px; 
+        gap: 12px; 
+        flex-direction: column; 
+        align-items: flex-start;
+        border-radius: 20px;
+    }
+    
+    .kpi-icon { width: 48px; height: 48px; font-size: 1.3rem; border-radius: 14px; }
+    .kpi-card::before { width: 50px; height: 50px; top: -10px; right: -10px; }
+    
+    .kpi-info h3 { font-size: 0.75rem; line-height: 1.2; margin-bottom: 2px;}
+    .kpi-info p { font-size: 1.4rem; } 
+
+    /* Ajustes das Setas do Carrossel Mobile */
+    .left-arrow { left: -5px; }
+    .right-arrow { right: -5px; }
+    .carousel-arrow { 
+        width: 38px; 
+        height: 38px; 
+        font-size: 1rem; 
+    }
+
+    .content-grid { gap: 25px; width: 100%; }
+    .glass-card { padding: 25px 20px; border-radius: 24px; max-width: 100%; overflow: hidden;}
+    .glass-card h2 { font-size: 1.4rem; margin-bottom: 20px; justify-content: center; text-align: center; }
+    
+    .canvas-wrapper { height: 250px; width: 100%; } 
+
+    /* Rolagem horizontal isolada para o mini-estoque */
+    .stock-grid { 
+        display: flex; 
+        overflow-x: auto; 
+        scroll-snap-type: x mandatory; 
+        padding-bottom: 15px; 
+        gap: 15px; 
+        overscroll-behavior-x: contain; 
+    }
     .stock-grid::-webkit-scrollbar { display: none; } 
-    .stock-item { min-width: 110px; scroll-snap-align: start; padding: 15px; border-radius: 14px; }
-    .stock-item span { font-size: 1.4rem; }
+    .stock-item { min-width: 140px; scroll-snap-align: start; padding: 20px; border-radius: 20px; }
+    .stock-item h4 { font-size: 0.95rem;}
+    .stock-item span { font-size: 2rem; } 
 
-    /* Formulários "Touch-Friendly" */
-    .action-tabs { gap: 6px; overflow-x: auto; padding: 4px; border-radius: 12px; }
-    .tab-btn { padding: 10px 15px; font-size: 0.8rem; border-radius: 10px; white-space: nowrap; }
+    /* Formulários e Touch Targets */
+    .action-tabs { 
+        gap: 10px; 
+        overflow-x: auto; 
+        padding: 8px; 
+        border-radius: 18px; 
+        overscroll-behavior-x: contain; 
+    }
+    .tab-btn { padding: 14px 16px; font-size: 0.95rem; border-radius: 14px; white-space: nowrap; }
     
     .input-row { grid-template-columns: 1fr; gap: 0; }
-    .input-group { margin-bottom: 15px; }
-    /* Tamanho 16px previne o zoom automático no iOS */
-    .input-group input, .input-group select { padding: 15px; border-radius: 14px; font-size: 16px; }
-    .btn-submit { padding: 16px; font-size: 1rem; border-radius: 14px; }
-
-    /* Tabela Otimizada */
-    .modern-table { display: block; overflow-x: auto; white-space: nowrap; font-size: 0.9rem; }
-    .modern-table th { padding: 12px 15px; font-size: 0.8rem; }
-    .modern-table td { padding: 15px; }
+    .input-group { margin-bottom: 18px; width: 100%; }
+    .input-group label { font-size: 0.95rem; margin-bottom: 10px;}
+    .input-group input, .input-group select { 
+        padding: 20px; 
+        border-radius: 18px; 
+        font-size: 16px; /* Evita zoom forçado de input pelo Safari/iOS */ 
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .btn-submit { padding: 22px; font-size: 1.15rem; border-radius: 18px; width: 100%; }
 }

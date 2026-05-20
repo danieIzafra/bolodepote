@@ -2,48 +2,57 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Ninho & Nutella</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no, viewport-fit=cover">
+    <title>Dashboard | Painel de Gestão</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bolo Pote Pro">
+    <meta name="apple-mobile-web-app-title" content="Dashboard">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Menu Lateral (Vira Menu Inferior no Celular) -->
-        <aside class="sidebar">
-            <div class="logo">
-                <i class="fa-solid fa-cake-candles"></i>
-                <h2>Bolo Pote Pro</h2>
+    <div class="top-app-bar">
+        <div class="top-bar-content">
+            <div class="app-logo-wrapper">
+                <img src="logo.png" alt="Logo da Marca" class="app-logo-img">
             </div>
+            <button id="themeToggle" class="theme-btn-top" title="Mudar Tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="brand-logo-container">
+                <img src="logo.png" alt="Logo Oficial" class="sidebar-logo">
+            </div>
+            
             <ul class="nav-links">
-                <li class="active" onclick="window.location.href='index.html'"><i class="fa-solid fa-chart-pie"></i> Painel Geral</li>
-                <li onclick="window.location.href='registrar.html'"><i class="fa-solid fa-cart-plus"></i> Registrar</li>
-                <li onclick="window.location.href='clientes.html'"><i class="fa-solid fa-users"></i> Clientes</li>
+                <li class="active" onclick="window.location.href='index.html'">
+                    <i class="fa-solid fa-chart-pie"></i> <span class="menu-text">Painel</span>
+                </li>
+                <li onclick="window.location.href='registrar.html'">
+                    <i class="fa-solid fa-plus"></i> <span class="menu-text">Registrar</span>
+                </li>
+                <li onclick="window.location.href='clientes.html'">
+                    <i class="fa-solid fa-users"></i> <span class="menu-text">Clientes</span>
+                </li>
             </ul>
         </aside>
 
-        <!-- Conteúdo Principal -->
         <main class="main-content">
             <header>
                 <div>
                     <h1>Visão Geral</h1>
                     <p>Controle de Estoque e Finanças</p>
                 </div>
-                <div class="header-actions">
-                    <button id="themeToggle" class="theme-btn" title="Mudar Tema">
-                        <i class="fa-solid fa-moon"></i>
-                    </button>
-                </div>
             </header>
 
-            <!-- KPIs -->
             <section class="kpi-grid">
                 <div class="kpi-card saldo">
                     <div class="kpi-icon"><i class="fa-solid fa-building-columns"></i></div>
@@ -77,13 +86,35 @@
                         <h2><i class="fa-solid fa-boxes-stacked"></i> Estoque Pronto para Venda</h2>
                         <div class="stock-grid" id="stockList"></div>
                     </div>
-                    <div class="chart-container glass-card">
-                        <h2>Fluxo de Caixa vs Faturamento</h2>
-                        <div class="canvas-wrapper"><canvas id="financeChart"></canvas></div>
+                    
+                    <div class="carousel-wrapper">
+                        <button class="carousel-arrow left-arrow" onclick="moverCarrossel(-1)">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        
+                        <div class="charts-carousel" id="chartsCarousel">
+                            <div class="chart-card glass-card">
+                                <h2><i class="fa-solid fa-chart-line"></i> Fluxo de Caixa</h2>
+                                <div class="canvas-wrapper"><canvas id="financeChart"></canvas></div>
+                            </div>
+                            
+                            <div class="chart-card glass-card">
+                                <h2><i class="fa-solid fa-crown" style="color: #fbc02d;"></i> Melhores Clientes</h2>
+                                <div class="canvas-wrapper"><canvas id="clientesChart"></canvas></div>
+                            </div>
+
+                            <div class="chart-card glass-card">
+                                <h2><i class="fa-solid fa-chart-pie" style="color: var(--brand-pink);"></i> Sabores Favoritos</h2>
+                                <div class="canvas-wrapper"><canvas id="saboresChart"></canvas></div>
+                            </div>
+                        </div>
+
+                        <button class="carousel-arrow right-arrow" onclick="moverCarrossel(1)">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Painel Administrativo -->
                 <div class="actions-container glass-card">
                     <h2>Administração</h2>
                     
@@ -151,7 +182,6 @@
     </div>
     <script src="script.js"></script>
     <script>
-        // Ajuste das abas exclusivo para o index.html
         window.showTab = function(tab) {
             const tabs = ['producao', 'receber', 'custo', 'sabores'];
             const btns = document.querySelectorAll('.tab-btn');
