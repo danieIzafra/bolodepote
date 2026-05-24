@@ -218,44 +218,33 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 
 
 /* ==========================================
-   CARROSSEL DE GRÁFICOS (NAVEGAÇÃO POR SETAS)
+   CARROSSEL DE KPIs COM SETAS
    ========================================== */
-.carousel-wrapper {
-    position: relative;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    margin-bottom: 25px;
+.kpi-wrapper {
+    margin-bottom: 45px;
 }
 
-.charts-carousel {
+.kpi-carousel {
     display: flex;
-    overflow-x: hidden; /* Remove completamente o deslize com o dedo para evitar bugs */
-    scroll-behavior: smooth; /* Animação fluida e suave pelas setas */
-    gap: 20px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    gap: 15px;
     width: 100%;
     scroll-snap-type: x mandatory;
     padding: 10px 0;
 }
 
-.chart-card {
-    min-width: 100%; 
-    scroll-snap-align: center;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
+.kpi-carousel .kpi-card {
+    min-width: calc(33.333% - 10px); /* 3 cards por vez no PC */
+    scroll-snap-align: start;
 }
 
-.chart-card h2 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    justify-content: center;
-    text-align: center;
-}
-
-@media (min-width: 1100px) {
-    .chart-card {
-        min-width: calc(50% - 10px); /* Lado a lado em telas bem grandes */
+@media (max-width: 768px) {
+    .kpi-wrapper {
+        margin-bottom: 25px;
+    }
+    .kpi-carousel .kpi-card {
+        min-width: calc(50% - 7.5px); /* Mantém a visão de 2x2 no celular que você gostou! */
     }
 }
 
@@ -526,7 +515,7 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 
 @media (max-width: 768px) {
     body { 
-        padding-top: 90px; 
+        padding-top: calc(90px + env(safe-area-inset-top, 20px)); 
         padding-bottom: 120px; 
     }
     
@@ -545,7 +534,8 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
     
     /* Configurações da barra superior mobile */
     .top-app-bar {
-        height: 75px;
+        height: calc(75px + env(safe-area-inset-top, 20px));
+        padding-top: env(safe-area-inset-top, 20px);
         background: var(--bg-card);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
