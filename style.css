@@ -55,14 +55,23 @@ body.dark-mode {
 ::-webkit-scrollbar-thumb { background: rgba(216, 92, 123, 0.3); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--brand-pink); }
 
-/* TRAVA RIGOROSA PARA COMPORTAMENTO DE APP NATIVO (SEM ZOOM E SEM SCROLL HORIZONTAL) */
+/* TRAVA RIGOROSA PARA COMPORTAMENTO DE APP NATIVO */
 html, body {
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden !important; /* Impede vazar na lateral */
-    overscroll-behavior-x: none; /* Tira o efeito "elástico" indesejado no iOS */
-    touch-action: pan-y; /* Permite estritamente gestos verticais */
-    -webkit-text-size-adjust: 100%; /* Bloqueia redimensionamento automático de fonte */
+    overflow-x: hidden !important; 
+    overscroll-behavior-x: none; 
+    touch-action: pan-y; /* Padrão vertical */
+    -webkit-text-size-adjust: 100%; 
+}
+
+/* LIBERA O DESLIZE LATERAL NAS ÁREAS ESPECÍFICAS (SWIPE) */
+.kpi-carousel, 
+.chic-swipe-container, 
+.stock-grid, 
+.action-tabs {
+    touch-action: pan-x pan-y !important;
+    -webkit-overflow-scrolling: touch; 
 }
 
 body {
@@ -155,8 +164,29 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 .glass-card h2 i { color: var(--brand-pink); }
 
 /* --- KPIs --- */
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 45px; }
+.kpi-wrapper {
+    margin-bottom: 45px;
+    position: relative;
+}
+
+.kpi-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 15px;
+    width: 100%;
+    scroll-snap-type: x mandatory;
+    padding: 10px 0;
+    scrollbar-width: none; /* Firefox */
+}
+
+.kpi-carousel::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
 .kpi-card { 
+    min-width: calc(33.333% - 10px); 
+    scroll-snap-align: start;
     background: var(--bg-card); 
     border: 1px solid var(--border-soft);
     padding: 25px; border-radius: 24px; display: flex; align-items: center; gap: 20px; 
@@ -201,6 +231,7 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 .kpi-info h3 { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 .kpi-info p { font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-top: 4px; font-family: 'Playfair Display', serif; }
 
+
 /* --- CONTEÚDO E FORMS --- */
 .content-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 35px; width: 100%; }
 .left-column { display: flex; flex-direction: column; gap: 35px; min-width: 0; }
@@ -218,66 +249,86 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 
 
 /* ==========================================
-   CARROSSEL DE KPIs COM SETAS
+   NOVO SISTEMA DE SWIPE (GRÁFICOS E TABELAS)
    ========================================== */
-.kpi-wrapper {
-    margin-bottom: 45px;
-}
-
-.kpi-carousel {
-    display: flex;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-    gap: 15px;
+.chic-swipe-wrapper {
     width: 100%;
-    scroll-snap-type: x mandatory;
-    padding: 10px 0;
-}
-
-.kpi-carousel .kpi-card {
-    min-width: calc(33.333% - 10px); /* 3 cards por vez no PC */
-    scroll-snap-align: start;
-}
-
-@media (max-width: 768px) {
-    .kpi-wrapper {
-        margin-bottom: 25px;
-    }
-    .kpi-carousel .kpi-card {
-        min-width: calc(50% - 7.5px); /* Mantém a visão de 2x2 no celular que você gostou! */
-    }
-}
-
-/* --- Botões de Navegação das Setas --- */
-.carousel-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--brand-pink);
-    color: white;
-    border: none;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
+    position: relative;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.chic-swipe-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none; 
+    width: 100%;
+    gap: 15px;
+    padding-bottom: 5px;
+}
+
+.chic-swipe-container::-webkit-scrollbar {
+    display: none; 
+}
+
+.chic-swipe-item {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.item-card {
+    height: 100%;
+    min-height: 390px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.item-card .canvas-wrapper {
+    flex-grow: 1;
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+.carousel-dots {
+    display: flex;
     justify-content: center;
-    font-size: 1.2rem;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.carousel-dots .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--text-muted);
+    opacity: 0.35;
+    border-radius: 50%;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 4px 15px rgba(216, 92, 123, 0.4);
-    transition: all 0.3s ease;
 }
 
-.carousel-arrow:hover {
-    background: var(--brand-pink-dark);
-    transform: translateY(-50%) scale(1.1);
+.carousel-dots .dot.active {
+    width: 24px;
+    background: var(--brand-pink);
+    opacity: 1;
+    border-radius: 10px;
 }
 
-.left-arrow { left: -15px; }
-.right-arrow { right: -15px; }
-
-.canvas-wrapper { position: relative; height: 320px; width: 100%; max-width: 100%; }
+@media (min-width: 768px) {
+    .chic-swipe-item {
+        flex: 0 0 calc(50% - 7.5px);
+    }
+}
 
 
 /* --- FORMULÁRIOS E ABAS --- */
@@ -436,7 +487,7 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 
 
 /* ==========================================
-   NOVO TOPO APP BAR E LOGO (REVOLUÇÃO HÍBRIDA)
+   TOPO APP BAR E LOGO (REVOLUÇÃO HÍBRIDA)
    ========================================== */
 .brand-logo-container {
     display: flex;
@@ -515,7 +566,7 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
 
 @media (max-width: 768px) {
     body { 
-        padding-top: calc(90px + env(safe-area-inset-top, 20px)); 
+        padding-top: 90px; 
         padding-bottom: 120px; 
     }
     
@@ -534,8 +585,7 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
     
     /* Configurações da barra superior mobile */
     .top-app-bar {
-        height: calc(75px + env(safe-area-inset-top, 20px));
-        padding-top: env(safe-area-inset-top, 20px);
+        height: 75px;
         background: var(--bg-card);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
@@ -624,16 +674,13 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
     .nav-links li:nth-child(2) .menu-text { display: none; } 
 
     /* GRADE INTELIGENTE DE KPIs 2x3 */
-    .kpi-grid { 
-        display: grid; 
-        grid-template-columns: 1fr 1fr; 
-        gap: 15px; 
-        margin-bottom: 25px;
-        width: 100%;
+    .kpi-wrapper { margin-bottom: 25px; }
+    
+    .kpi-carousel .kpi-card {
+        min-width: calc(50% - 7.5px); /* Mostra 2 por vez no mobile */
     }
     
     .kpi-card { 
-        min-width: unset; 
         padding: 16px; 
         gap: 12px; 
         flex-direction: column; 
@@ -646,15 +693,6 @@ header p { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
     
     .kpi-info h3 { font-size: 0.75rem; line-height: 1.2; margin-bottom: 2px;}
     .kpi-info p { font-size: 1.4rem; } 
-
-    /* Ajustes das Setas do Carrossel Mobile */
-    .left-arrow { left: -5px; }
-    .right-arrow { right: -5px; }
-    .carousel-arrow { 
-        width: 38px; 
-        height: 38px; 
-        font-size: 1rem; 
-    }
 
     .content-grid { gap: 25px; width: 100%; }
     .glass-card { padding: 25px 20px; border-radius: 24px; max-width: 100%; overflow: hidden;}

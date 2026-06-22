@@ -53,30 +53,36 @@
                 </div>
             </header>
 
-            <section class="kpi-grid">
-                <div class="kpi-card saldo">
-                    <div class="kpi-icon"><i class="fa-solid fa-building-columns"></i></div>
-                    <div class="kpi-info"><h3>Saldo em Conta</h3><p id="totalSaldo">R$ 0,00</p></div>
-                </div>
-                <div class="kpi-card pendente">
-                    <div class="kpi-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <div class="kpi-info"><h3>A Receber (Fiado)</h3><p id="totalReceber">R$ 0,00</p></div>
-                </div>
-                <div class="kpi-card faturamento">
-                    <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
-                    <div class="kpi-info"><h3>Total Vendido</h3><p id="totalFaturamento">R$ 0,00</p></div>
-                </div>
-                <div class="kpi-card custos">
-                    <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
-                    <div class="kpi-info"><h3>Custos Totais</h3><p id="totalCustos">R$ 0,00</p></div>
-                </div>
-                <div class="kpi-card lucro">
-                    <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
-                    <div class="kpi-info"><h3>Lucro Projetado</h3><p id="totalLucro">R$ 0,00</p></div>
-                </div>
-                <div class="kpi-card unidades">
-                    <div class="kpi-icon"><i class="fa-solid fa-box-open"></i></div>
-                    <div class="kpi-info"><h3>Bolos Vendidos</h3><p id="totalUnidades">0</p></div>
+            <section class="kpi-wrapper">
+                <div class="kpi-carousel" id="kpiCarousel">
+                    <div class="kpi-card saldo">
+                        <div class="kpi-icon"><i class="fa-solid fa-building-columns"></i></div>
+                        <div class="kpi-info"><h3>Saldo em Conta</h3><p id="totalSaldo">R$ 0,00</p></div>
+                    </div>
+                    <div class="kpi-card pendente">
+                        <div class="kpi-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="kpi-info"><h3>A Receber (Fiado)</h3><p id="totalReceber">R$ 0,00</p></div>
+                    </div>
+                    <div class="kpi-card faturamento">
+                        <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="kpi-info"><h3>Total Vendido</h3><p id="totalFaturamento">R$ 0,00</p></div>
+                    </div>
+                    <div class="kpi-card custos">
+                        <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                        <div class="kpi-info"><h3>Custos Totais</h3><p id="totalCustos">R$ 0,00</p></div>
+                    </div>
+                    <div class="kpi-card lucro">
+                        <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="kpi-info"><h3>Lucro Projetado</h3><p id="totalLucro">R$ 0,00</p></div>
+                    </div>
+                    <div class="kpi-card unidades">
+                        <div class="kpi-icon"><i class="fa-solid fa-cake-candles"></i></div>
+                        <div class="kpi-info"><h3>Potes p/ TWD</h3><p id="totalUnidades">0</p></div>
+                    </div>
+                    <div class="kpi-card brigadeiros">
+                        <div class="kpi-icon" style="color: #6D4C41; border-color: rgba(109, 76, 65, 0.2); background: rgba(109, 76, 65, 0.15);"><i class="fa-solid fa-building"></i></div>
+                        <div class="kpi-info"><h3>Potes p/ CBA</h3><p id="totalBrigadeiros">0</p></div>
+                    </div>
                 </div>
             </section>
 
@@ -86,32 +92,67 @@
                         <h2><i class="fa-solid fa-boxes-stacked"></i> Estoque Pronto para Venda</h2>
                         <div class="stock-grid" id="stockList"></div>
                     </div>
-                    
-                    <div class="carousel-wrapper">
-                        <button class="carousel-arrow left-arrow" onclick="moverCarrossel(-1)">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-                        
-                        <div class="charts-carousel" id="chartsCarousel">
-                            <div class="chart-card glass-card">
-                                <h2><i class="fa-solid fa-chart-line"></i> Fluxo de Caixa</h2>
-                                <div class="canvas-wrapper"><canvas id="financeChart"></canvas></div>
+
+                    <div class="chic-swipe-wrapper">
+                        <div class="chic-swipe-container" id="mainSwipeCarousel">
+                            
+                            <div class="chic-swipe-item">
+                                <div class="table-container glass-card item-card">
+                                    <h2><i class="fa-solid fa-file-invoice-dollar"></i> Demonstrativo</h2>
+                                    <div style="overflow-x: auto; width: 100%;">
+                                        <table style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; min-width: 300px;">
+                                            <thead>
+                                                <tr style="border-bottom: 2px solid var(--border-soft); color: var(--text-muted); font-size: 0.85rem;">
+                                                    <th style="padding: 12px 8px;">Lançamento</th>
+                                                    <th style="padding: 12px 8px; text-align: right;">Valor</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="resumoFinanceiroCorpo" style="font-size: 0.95rem; color: var(--text-main);">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chic-swipe-item">
+                                <div class="chart-card glass-card item-card">
+                                    <h2><i class="fa-solid fa-trophy" style="color: #fbc02d;"></i> TWD vs CBA</h2>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Quantidade de potes vendidos</p>
+                                    <div class="canvas-wrapper"><canvas id="twdCbaChart"></canvas></div>
+                                </div>
                             </div>
                             
-                            <div class="chart-card glass-card">
-                                <h2><i class="fa-solid fa-crown" style="color: #fbc02d;"></i> Melhores Clientes</h2>
-                                <div class="canvas-wrapper"><canvas id="clientesChart"></canvas></div>
+                            <div class="chic-swipe-item">
+                                <div class="chart-card glass-card item-card">
+                                    <h2><i class="fa-solid fa-money-bill-trend-up" style="color: var(--profit-mint);"></i> Balanço Geral</h2>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Faturamento, Custos e Lucro</p>
+                                    <div class="canvas-wrapper"><canvas id="financeChart"></canvas></div>
+                                </div>
                             </div>
 
-                            <div class="chart-card glass-card">
-                                <h2><i class="fa-solid fa-chart-pie" style="color: var(--brand-pink);"></i> Sabores Favoritos</h2>
-                                <div class="canvas-wrapper"><canvas id="saboresChart"></canvas></div>
+                            <div class="chic-swipe-item">
+                                <div class="chart-card glass-card item-card">
+                                    <h2><i class="fa-solid fa-crown" style="color: #fbc02d;"></i> Melhores Clientes</h2>
+                                    <div class="canvas-wrapper"><canvas id="clientesChart"></canvas></div>
+                                </div>
                             </div>
+
+                            <div class="chic-swipe-item">
+                                <div class="chart-card glass-card item-card">
+                                    <h2><i class="fa-solid fa-chart-pie" style="color: var(--brand-pink);"></i> Sabores Favoritos</h2>
+                                    <div class="canvas-wrapper"><canvas id="saboresChart"></canvas></div>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <button class="carousel-arrow right-arrow" onclick="moverCarrossel(1)">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
+                        <div class="carousel-dots" id="mainCarouselDots">
+                            <span class="dot active" onclick="scrollToSlide(0)"></span>
+                            <span class="dot" onclick="scrollToSlide(1)"></span>
+                            <span class="dot" onclick="scrollToSlide(2)"></span>
+                            <span class="dot" onclick="scrollToSlide(3)"></span>
+                            <span class="dot" onclick="scrollToSlide(4)"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -148,11 +189,11 @@
 
                     <form id="formCusto" class="action-form" style="display: none;">
                         <div class="input-group">
-                            <label>Descrição do Custo</label>
-                            <input type="text" id="descCusto" required placeholder="Ex: Leite Moça, Embalagens...">
+                            <label>O que você comprou? (Ingredientes, embalagens...)</label>
+                            <input type="text" id="descCusto" required placeholder="Ex: Leite Moça, Morango...">
                         </div>
                         <div class="input-group">
-                            <label>Valor (R$)</label>
+                            <label>Valor Gasto (R$)</label>
                             <input type="number" id="valorCusto" min="0.01" step="0.01" required placeholder="Ex: 50.00">
                         </div>
                         <button type="submit" class="btn-submit btn-custo">Registrar Despesa <i class="fa-solid fa-minus"></i></button>
